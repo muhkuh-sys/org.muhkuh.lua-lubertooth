@@ -1,0 +1,3 @@
+ADD_SUBDIRECTORY(libusb)
+ADD_SUBDIRECTORY(libbtbb)
+ADD_SUBDIRECTORY(ubertooth)

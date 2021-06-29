@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jonchki-artifact version="1.0">
+	<info group="org.muhkuh.lua"
+	      module="lubertooth"
+	      artifact="lua5.4-lubertooth"
+	      version="@PROJECT_VERSION@"
+	      vcs-id="@PROJECT_VERSION_VCS@"
+	      extension="tar.xz"
+	      platform="@JONCHKI_PLATFORM@">
+		<license name="MIT/X11"/>
+		<author name="Muhkuh Team" url="https://github.com/muhkuh-sys/" />
+		<description>
+			A minimal wrapper for the ubertooth library. At the moment only specan is supported.
+		</description>
+	</info>
+	<dependencies>
+		<build-dependency group="org.lua" module="lua" artifact="lua" version="5.4"/>
+		<dependency group="org.lua" module="lua" artifact="lua"/>
+	</dependencies>
+</jonchki-artifact>
