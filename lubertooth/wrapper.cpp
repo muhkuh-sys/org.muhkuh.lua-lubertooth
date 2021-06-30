@@ -102,12 +102,14 @@ int Ubertooth::connect(int iDevice)
 }
 
 
-int Ubertooth::specan(void)
+int Ubertooth::specan(SWIGLUA_REF tLuaFn)
 {
 	int iResult;
 	int iLower = 2402;
 	int iUpper= 2480;
 
+
+	m_tLuaCallbackFn = tLuaFn;
 
 	if( m_ptUt==NULL )
 	{
@@ -181,17 +183,94 @@ void Ubertooth::s_callback_specan(ubertooth_t *ptUt , void *pvUser)
 
 void Ubertooth::callback_specan(ubertooth_t *ptUt)
 {
-	usb_pkt_rx rx = fifo_pop(ptUt->fifo);
+	usb_pkt_rx tRx;
 	int j;
-	uint16_t frequency;
-	int8_t rssi;
+	uint16_t usFrequency;
+	int8_t iRssi;
+	uint32_t ulTime;
+	lua_State *ptL;
+	int iRef;
+	int iOldTopOfStack;
+	int iResult;
+	const char *pcErrMsg;
+	const char *pcErrDetails;
+	int fStillRunning;
+	int iLuaType;
 
 
-	/* Process each received block. */
-	for (j = 0; j < DMA_SIZE-2; j += 3) {
-		frequency = (rx.data[j] << 8) | rx.data[j + 1];
-		rssi = (int8_t)rx.data[j + 2];
+	/* Get the next packet from the FIFO. */
+	tRx = fifo_pop(ptUt->fifo);
 
-		printf("%f, %d, %d\n", ((double)rx.clk100ns)/10000000, frequency, rssi);
+	/* Process all entries in the packet. */
+	for (j = 0; j < DMA_SIZE-2; j += 3)
+	{
+		/* Extract the frequency and level. */
+		usFrequency = (tRx.data[j] << 8) | tRx.data[j + 1];
+		iRssi = (int8_t)tRx.data[j + 2];
+		ulTime = tRx.clk100ns;
+
+		printf("%f, %d, %d\n", ((double)ulTime)/10000000, usFrequency, iRssi);
+	}
+
+	/* Demo callback. */
+	ptL = m_tLuaCallbackFn.L;
+	iRef = m_tLuaCallbackFn.ref;
+	if( ptL!=NULL && iRef!=LUA_NOREF && iRef!=LUA_REFNIL )
+	{
+		/* Get the current stack position. */
+		iOldTopOfStack = lua_gettop(ptL);
+		lua_rawgeti(ptL, LUA_REGISTRYINDEX, iRef);
+
+		/* Push the arguments on the stack. */
+		lua_pushlstring(ptL, "hallo", 5);
+
+		/* Call the function with 1 argument and 1 result. */
+		iResult = lua_pcall(ptL, 1, 1, 0);
+		if( iResult!=0 )
+		{
+			switch( iResult )
+			{
+			case LUA_ERRRUN:
+				pcErrMsg = "runtime error";
+				break;
+			case LUA_ERRMEM:
+				pcErrMsg = "memory allocation error";
+				break;
+			default:
+				pcErrMsg = "unknown errorcode";
+				break;
+			}
+			pcErrDetails = lua_tostring(ptL, -1);
+			fprintf(stderr, "callback function failed: %s (%d): %s", pcErrMsg, iResult, pcErrDetails);
+			fStillRunning = 0;
+		}
+		else
+		{
+			/* Get the function's return value. */
+			iLuaType = lua_type(ptL, -1);
+			if( iLuaType!=LUA_TNUMBER && iLuaType!=LUA_TBOOLEAN )
+			{
+				fprintf(stderr, "callback function returned a non-boolean type: %d", iLuaType);
+				fStillRunning = 0;
+			}
+			else
+			{
+				iResult = lua_toboolean(ptL, -1);
+				fStillRunning = (iResult!=0);
+			}
+		}
+
+		/* Return old stack top. */
+		lua_settop(ptL, iOldTopOfStack);
+	}
+	else
+	{
+		/* No callback function -> stop immediately. */
+		fStillRunning = 0;
+	}
+
+	if( fStillRunning==0 )
+	{
+		ptUt->stop_ubertooth = 1;
 	}
 }

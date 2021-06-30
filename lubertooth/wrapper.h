@@ -14,7 +14,14 @@ extern "C" {
 
 
 #ifndef SWIGRUNTIME
-#include <swigluarun.h>
+#       include <swigluarun.h>
+
+/* Swigluarun does not include the lua specific defines. Add them here. */
+typedef struct
+{
+        lua_State* L; /* the state */
+        int ref;      /* a ref in the lua global index */
+} SWIGLUA_REF;
 #endif
 
 
@@ -35,7 +42,7 @@ public:
 	~Ubertooth(void);
 
 	int connect(int iDevice);
-	int specan(void);
+	int specan(SWIGLUA_REF tLuaFn);
 
 	/* Do not wrap the callback function. It is only for internal use. */
 #ifndef SWIG
@@ -49,6 +56,8 @@ private:
 	ubertooth_t *m_ptUt;
 	int m_iIsConnected;
 	int m_iDevice;
+
+	SWIGLUA_REF m_tLuaCallbackFn;
 #endif
 };
 

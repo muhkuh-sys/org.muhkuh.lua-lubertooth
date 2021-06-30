@@ -3,6 +3,10 @@
 %include "stdint.i"
 %include "typemaps.i"
 
+#ifdef SWIGLUA
+%include "lua_fnptr.i"
+#endif
+
 %{
 	#include "wrapper.h"
 %}
