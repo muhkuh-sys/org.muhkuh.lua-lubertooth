@@ -1,0 +1,14 @@
+diff -uNr ubertooth-2020-12-R1/host/libubertooth/src/CMakeLists.txt ubertooth-2020-12-R1_patched/host/libubertooth/src/CMakeLists.txt
+--- ubertooth-2020-12-R1/host/libubertooth/src/CMakeLists.txt	2020-12-25 22:55:05.000000000 +0100
++++ ubertooth-2020-12-R1_patched/host/libubertooth/src/CMakeLists.txt	2021-06-30 11:47:42.547017365 +0200
+@@ -61,6 +61,10 @@
+ 	target_link_libraries(ubertooth-static ${LIBUBERTOOTH_LIBS})
+ 	set_target_properties(ubertooth-static PROPERTIES OUTPUT_NAME "ubertooth")
+ 	set_target_properties(ubertooth-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
++	# This static library will be linked with a shared object later. Add "-fPIC" on GCC systems or X64 builds break.
++	IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"  AND  "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
++		SET_TARGET_PROPERTIES(ubertooth-static PROPERTIES COMPILE_FLAGS -fPIC)
++	ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"  AND  "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+ 	install(TARGETS ubertooth-static
+ 			DESTINATION lib${LIB_SUFFIX}
+ 			COMPONENT staticlibs)

@@ -1,0 +1,14 @@
+diff -uNr libbtbb-2020-12-R1/lib/src/CMakeLists.txt libbtbb-2020-12-R1_patched/lib/src/CMakeLists.txt
+--- libbtbb-2020-12-R1/lib/src/CMakeLists.txt	2020-12-25 22:43:09.000000000 +0100
++++ libbtbb-2020-12-R1_patched/lib/src/CMakeLists.txt	2021-06-30 11:51:14.788476831 +0200
+@@ -57,6 +57,10 @@
+     add_library(btbb-static STATIC ${c_sources})
+     set_target_properties(btbb-static PROPERTIES OUTPUT_NAME "btbb")
+     set_target_properties(btbb-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
++    # This static library will be linked with a shared object later. Add "-fPIC" on GCC systems or X64 builds break.
++    IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"  AND  "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
++        SET_TARGET_PROPERTIES(btbb-static PROPERTIES COMPILE_FLAGS -fPIC)
++    ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"  AND  "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+     install(TARGETS btbb-static
+             DESTINATION lib${LIB_SUFFIX}
+             COMPONENT staticlibs)
