@@ -1,4 +1,4 @@
-#! /usr/bin/python2.7
+#! /usr/bin/python3
 
 from jonchki import cli_args
 from jonchki import install
@@ -84,8 +84,9 @@ if tPlatform['host_distribution_id'] == 'ubuntu':
         if tPlatform['cpu_architecture'] == tPlatform['host_cpu_architecture']:
             # Build for the build host.
 
+            # Check for all system dependencies.
             astrDeb = [
-                'libudev-dev',
+                'libudev-dev'
             ]
             install.install_host_debs(astrDeb)
 
@@ -97,6 +98,7 @@ if tPlatform['host_distribution_id'] == 'ubuntu':
         elif tPlatform['cpu_architecture'] == 'arm64':
             # Build on linux for raspebrry.
 
+            # Install the build dependencies.
             astrDeb = [
                 'libudev-dev:arm64'
             ]
@@ -173,8 +175,6 @@ else:
 # Create the folders if they do not exist yet.
 astrFolders = [
     strCfg_workingFolder,
-    os.path.join(strCfg_workingFolder, 'examples'),
-    os.path.join(strCfg_workingFolder, 'external'),
     os.path.join(strCfg_workingFolder, 'lua5.1'),
     os.path.join(strCfg_workingFolder, 'lua5.1', 'build_requirements'),
     os.path.join(strCfg_workingFolder, 'lua5.4'),
@@ -224,28 +224,17 @@ astrCmd = [
     'install-dependencies',
     '--verbose', strCfg_jonchkiVerbose,
     '--syscfg', strCfg_jonchkiSystemConfiguration,
-    '--prjcfg', strCfg_jonchkiProjectConfiguration
+    '--prjcfg', strCfg_jonchkiProjectConfiguration,
+    '--logfile', os.path.join(strCwd, 'jonchki.log'),
+    '--dependency-log', os.path.join(
+        strCfg_projectFolder,
+        'dependency-log-lua5.1.xml'
+    )
 ]
 astrCmd.extend(astrJONCHKI_SYSTEM)
 astrCmd.append('--build-dependencies')
 astrCmd.append(astrMatch[0])
 subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
-
-# ---------------------------------------------------------------------------
-#
-# Build the externals.
-#
-#astrCmd = [
-#    'cmake',
-#    '-DCMAKE_INSTALL_PREFIX=""',
-#    '-DPRJ_DIR=%s' % strCfg_projectFolder,
-#    '-DWORKING_DIR=%s' % strCfg_workingFolder
-#]
-#astrCmd.extend(astrCMAKE_COMPILER)
-#astrCmd.append(os.path.join(strCfg_projectFolder, 'external'))
-#strCwd = os.path.join(strCfg_workingFolder, 'external')
-#subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
-#subprocess.check_call(strMake, shell=True, cwd=strCwd, env=astrEnv)
 
 # ---------------------------------------------------------------------------
 #
@@ -264,6 +253,7 @@ astrCmd.extend(astrCMAKE_PLATFORM)
 astrCmd.append(strCfg_projectFolder)
 strCwd = os.path.join(strCfg_workingFolder, 'lua5.1')
 subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
+subprocess.check_call('%s' % strMake, shell=True, cwd=strCwd, env=astrEnv)
 subprocess.check_call('%s pack' % strMake, shell=True, cwd=strCwd, env=astrEnv)
 
 # ---------------------------------------------------------------------------
@@ -298,7 +288,12 @@ astrCmd = [
     'install-dependencies',
     '--verbose', strCfg_jonchkiVerbose,
     '--syscfg', strCfg_jonchkiSystemConfiguration,
-    '--prjcfg', strCfg_jonchkiProjectConfiguration
+    '--prjcfg', strCfg_jonchkiProjectConfiguration,
+    '--logfile', os.path.join(strCwd, 'jonchki.log'),
+    '--dependency-log', os.path.join(
+        strCfg_projectFolder,
+        'dependency-log-lua5.4.xml'
+    )
 ]
 astrCmd.extend(astrJONCHKI_SYSTEM)
 astrCmd.append('--build-dependencies')
@@ -323,4 +318,5 @@ astrCmd.extend(astrCMAKE_PLATFORM)
 astrCmd.append(strCfg_projectFolder)
 strCwd = os.path.join(strCfg_workingFolder, 'lua5.4')
 subprocess.check_call(' '.join(astrCmd), shell=True, cwd=strCwd, env=astrEnv)
+subprocess.check_call('%s' % strMake, shell=True, cwd=strCwd, env=astrEnv)
 subprocess.check_call('%s pack' % strMake, shell=True, cwd=strCwd, env=astrEnv)
