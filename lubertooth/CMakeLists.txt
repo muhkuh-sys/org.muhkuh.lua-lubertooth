@@ -32,12 +32,51 @@ CONFIGURE_FILE(installer/lua${BUILDCFG_LUA_VERSION}/lubertooth.xml
 #
 
 IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
+	# Set some paths.
+	SET(LIBUSB_INCLUDE       "${CMAKE_BINARY_DIR}/external/libusb/install/include/")
+	SET(LIBUSB_LIB           "${CMAKE_BINARY_DIR}/external/libusb/install/lib/libusb-1.0.a")
+	SET(LIBBTBB_INCLUDE      "${CMAKE_BINARY_DIR}/external/libbtbb/install/usr/local/include/")
+	SET(LIBBTBB_LIB          "${CMAKE_BINARY_DIR}/external/libbtbb/install/usr/local/lib/libbtbb.a")
+	SET(LIBUBERTOOTH_INCLUDE "${CMAKE_BINARY_DIR}/external/ubertooth/install/usr/local/include/")
+	SET(LIBUBERTOOTH_LIB     "${CMAKE_BINARY_DIR}/external/ubertooth/install/usr/local/lib/libubertooth.a")
+
 	# Select the LUA version.
 	INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/muhkuh_lua.cmake)
 
+	# Enable tests (see here for details: http://www.vtk.org/Wiki/CMake/Testing_With_CTest)
+	ENABLE_TESTING()
 
-	# Build something here...
+	# Set some installation folders.
+	INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/muhkuh_installation_folders.cmake)
 
+	FIND_PACKAGE(SWIG REQUIRED)
+
+	# Add a custom target for the swig runtime for LUA.
+	INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/muhkuh_swig_lua_runtime.cmake)
+
+	# Select the LUA version.
+	INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/muhkuh_lua.cmake)
+
+	INCLUDE(${SWIG_USE_FILE})
+
+	INCLUDE_DIRECTORIES(${LUA_INCLUDE_DIR})
+	INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/swig_runtime)
+	INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+	INCLUDE_DIRECTORIES(${LIBUSB_INCLUDE})
+	INCLUDE_DIRECTORIES(${LIBBTBB_INCLUDE})
+	INCLUDE_DIRECTORIES(${LIBUBERTOOTH_INCLUDE})
+
+	SET_SOURCE_FILES_PROPERTIES(lubertooth.i PROPERTIES CPLUSPLUS ON)
+	SET_SOURCE_FILES_PROPERTIES(lubertooth.i PROPERTIES SWIG_FLAGS "")
+	SWIG_ADD_MODULE(TARGET_lubertooth lua lubertooth.i wrapper.cpp)
+	SWIG_LINK_LIBRARIES(TARGET_lubertooth ${LUA_LIBRARIES} ${LIBUBERTOOTH_LIB} ${LIBBTBB_LIB} ${LIBUSB_LIB} -ludev)
+	ADD_DEPENDENCIES(TARGET_lubertooth TARGET_swigluarun TARGET_libubertooth TARGET_libusb TARGET_libbtbb)
+
+	# Set the name of the output file to "archive".
+	SET_TARGET_PROPERTIES(TARGET_lubertooth PROPERTIES PREFIX "" OUTPUT_NAME "lubertooth")
+
+	# Install the lua module.
+	INSTALL(TARGETS TARGET_lubertooth DESTINATION ${INSTALL_DIR_LUA_MODULES})
 
 	#----------------------------------------------------------------------------
 	#
