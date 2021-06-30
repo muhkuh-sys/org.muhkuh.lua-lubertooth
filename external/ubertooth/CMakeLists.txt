@@ -4,9 +4,6 @@ PROJECT("libubertooth")
 
 INCLUDE(ExternalProject)
 
-# Python is used for some test scripts.
-FIND_PACKAGE(Python3 REQUIRED COMPONENTS Interpreter)
-
 SET(VERSION_EXTERNAL "2020-12-R1")
 
 
@@ -37,7 +34,7 @@ ExternalProject_Add(TARGET_libubertooth
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ubertooth-${VERSION_EXTERNAL}
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/ubertooth-${VERSION_EXTERNAL}.tar.xz
                     URL_HASH SHA1=3c4d85100e3db5488f08338267309f9f16df7d03
-                    PATCH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/ubertooth-${VERSION_EXTERNAL}/src/TARGET_libubertooth --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
+                    PATCH_COMMAND "${PYTHON_EXE}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/ubertooth-${VERSION_EXTERNAL}/src/TARGET_libubertooth --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CMAKE_ARGS ${PRJ_CMAKE_ARGS}
                     SOURCE_SUBDIR host
                     INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install

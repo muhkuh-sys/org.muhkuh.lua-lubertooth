@@ -4,9 +4,6 @@ PROJECT("libbtbb")
 
 INCLUDE(ExternalProject)
 
-# Python is used for some test scripts.
-FIND_PACKAGE(PythonInterp 2.7 REQUIRED)
-
 SET(VERSION_EXTERNAL "2020-12-R1")
 
 
@@ -29,7 +26,7 @@ ExternalProject_Add(TARGET_libbtbb
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/libbtbb-${VERSION_EXTERNAL}
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/libbtbb-${VERSION_EXTERNAL}.tar.gz
                     URL_HASH SHA1=b4da5731b0fba74b69a7346ecd7afc77bb92495a
-                    PATCH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/libbtbb-${VERSION_EXTERNAL}/src/TARGET_libbtbb --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
+                    PATCH_COMMAND "${PYTHON_EXE}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/libbtbb-${VERSION_EXTERNAL}/src/TARGET_libbtbb --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CMAKE_ARGS ${PRJ_CMAKE_ARGS}
                     INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
 )
