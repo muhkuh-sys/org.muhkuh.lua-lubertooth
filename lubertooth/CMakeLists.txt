@@ -72,9 +72,6 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 	# Set the name of the output file to "archive".
 	SET_TARGET_PROPERTIES(TARGET_lubertooth PROPERTIES PREFIX "" OUTPUT_NAME "lubertooth")
 
-	# Install the lua module.
-	INSTALL(TARGETS TARGET_lubertooth DESTINATION ${INSTALL_DIR_LUA_MODULES})
-
 	#----------------------------------------------------------------------------
 	#
 	# Build a package for the selected platform.
@@ -105,10 +102,10 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 		        DESTINATION .)
 	ENDIF(${JONCHKI_PLATFORM_DIST_ID} STREQUAL "windows")
 
-	INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/lua
-	        DESTINATION .)
-	INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/lua_plugins
-	        DESTINATION .)
+	#INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/lua
+	#        DESTINATION .)
+	INSTALL(TARGETS TARGET_lubertooth
+	        DESTINATION lua_plugins)
 
 	CONFIGURE_FILE(installer/lua${BUILDCFG_LUA_VERSION}/lubertooth.xml
 	               ${CPACK_OUTPUT_FILE_PREFIX}/lua${BUILDCFG_LUA_VERSION}-lubertooth-${PROJECT_VERSION}-${JONCHKI_PLATFORM}.xml
