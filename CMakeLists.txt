@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-PROJECT("org.muhkuh.lua-ubertooth")
+PROJECT("org.muhkuh.lua-lubertooth")
 
 
 # Get the VCS version for the jonchki configuration.
