@@ -1,0 +1,32 @@
+diff -uNr ubertooth-2020-12-R1/host/libubertooth/src/ubertooth.c ubertooth-2020-12-R1_patched/host/libubertooth/src/ubertooth.c
+--- ubertooth-2020-12-R1/host/libubertooth/src/ubertooth.c	2020-12-25 22:40:39.000000000 +0100
++++ ubertooth-2020-12-R1_patched/host/libubertooth/src/ubertooth.c	2021-06-30 11:42:37.816654556 +0200
+@@ -54,6 +54,16 @@
+ 	       btbb_get_version(), btbb_get_release());
+ }
+ 
++const char *libubertooth_get_version(void)
++{
++	return VERSION;
++}
++
++const char *libubertooth_get_release(void)
++{
++	return RELEASE;
++}
++
+ ubertooth_t* cleanup_devh = NULL;
+ static void cleanup(int sig __attribute__((unused)))
+ {
+diff -uNr ubertooth-2020-12-R1/host/libubertooth/src/ubertooth.h ubertooth-2020-12-R1_patched/host/libubertooth/src/ubertooth.h
+--- ubertooth-2020-12-R1/host/libubertooth/src/ubertooth.h	2020-12-25 22:40:39.000000000 +0100
++++ ubertooth-2020-12-R1_patched/host/libubertooth/src/ubertooth.h	2021-06-30 11:43:00.020841226 +0200
+@@ -72,6 +72,8 @@
+ extern int max_ac_errors;
+ 
+ void print_version();
++const char *libubertooth_get_version(void);
++const char *libubertooth_get_release(void);
+ void register_cleanup_handler(ubertooth_t* ut, int do_exit);
+ ubertooth_t* ubertooth_init();
+ unsigned ubertooth_count(void);
