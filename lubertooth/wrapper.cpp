@@ -184,7 +184,7 @@ void Ubertooth::s_callback_specan(ubertooth_t *ptUt , void *pvUser)
 void Ubertooth::callback_specan(ubertooth_t *ptUt)
 {
 	usb_pkt_rx tRx;
-	int j;
+	int iCnt;
 	uint16_t usFrequency;
 	int8_t iRssi;
 	uint32_t ulTime;
@@ -201,18 +201,7 @@ void Ubertooth::callback_specan(ubertooth_t *ptUt)
 	/* Get the next packet from the FIFO. */
 	tRx = fifo_pop(ptUt->fifo);
 
-	/* Process all entries in the packet. */
-	for (j = 0; j < DMA_SIZE-2; j += 3)
-	{
-		/* Extract the frequency and level. */
-		usFrequency = (tRx.data[j] << 8) | tRx.data[j + 1];
-		iRssi = (int8_t)tRx.data[j + 2];
-		ulTime = tRx.clk100ns;
-
-		printf("%f, %d, %d\n", ((double)ulTime)/10000000, usFrequency, iRssi);
-	}
-
-	/* Demo callback. */
+	/* Get the reference to the callback function. */
 	ptL = m_tLuaCallbackFn.L;
 	iRef = m_tLuaCallbackFn.ref;
 	if( ptL!=NULL && iRef!=LUA_NOREF && iRef!=LUA_REFNIL )
@@ -221,11 +210,30 @@ void Ubertooth::callback_specan(ubertooth_t *ptUt)
 		iOldTopOfStack = lua_gettop(ptL);
 		lua_rawgeti(ptL, LUA_REGISTRYINDEX, iRef);
 
-		/* Push the arguments on the stack. */
-		lua_pushlstring(ptL, "hallo", 5);
+		/* Push the time on the stack as the first argument. */
+		lua_pushnumber(ptL, ((double)tRx.clk100ns)/10000000);
 
-		/* Call the function with 1 argument and 1 result. */
-		iResult = lua_pcall(ptL, 1, 1, 0);
+		/* Create a new table for the values.
+		 * The table will have 0 array elements and DMA_SIZE/3 record elements.
+		 */
+		lua_createtable(ptL, 0, DMA_SIZE/3);
+		for(iCnt=0; iCnt<DMA_SIZE-2; iCnt+=3)
+		{
+			/* Extract the frequency and level. */
+			usFrequency = (tRx.data[iCnt] << 8) | tRx.data[iCnt+1];
+			iRssi = (int8_t)tRx.data[iCnt+2];
+
+			lua_pushnumber(ptL, usFrequency);
+#if LUA_VERSION_NUM>=504
+			lua_pushinteger(ptL, iRssi);
+#else
+			lua_pushnumber(ptL, iRssi);
+#endif
+			lua_settable(ptL, -3);
+		}
+
+		/* Call the function with 2 arguments and 1 result. */
+		iResult = lua_pcall(ptL, 2, 1, 0);
 		if( iResult!=0 )
 		{
 			switch( iResult )
