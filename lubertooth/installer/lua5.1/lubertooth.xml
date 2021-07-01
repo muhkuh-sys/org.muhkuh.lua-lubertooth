@@ -7,7 +7,7 @@
 	      vcs-id="@PROJECT_VERSION_VCS@"
 	      extension="tar.xz"
 	      platform="@JONCHKI_PLATFORM@">
-		<license name="MIT/X11"/>
+		<license name="GPL-2.0"/>
 		<author name="Muhkuh Team" url="https://github.com/muhkuh-sys/" />
 		<description>
 			A minimal wrapper for the ubertooth library. At the moment only specan is supported.
