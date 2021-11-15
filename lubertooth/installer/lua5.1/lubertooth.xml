@@ -2,7 +2,7 @@
 <jonchki-artifact version="1.0">
 	<info group="org.muhkuh.lua"
 	      module="lubertooth"
-	      artifact="lua5.4-lubertooth"
+	      artifact="lua5.1-lubertooth"
 	      version="@PROJECT_VERSION@"
 	      vcs-id="@PROJECT_VERSION_VCS@"
 	      extension="tar.xz"
