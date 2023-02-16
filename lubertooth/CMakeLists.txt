@@ -27,6 +27,7 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 	SET(LIBBTBB_LIB          "${CMAKE_BINARY_DIR}/external/libbtbb/install/usr/local/lib/libbtbb.a")
 	SET(LIBUBERTOOTH_INCLUDE "${CMAKE_BINARY_DIR}/external/ubertooth/install/usr/local/include/")
 	SET(LIBUBERTOOTH_LIB     "${CMAKE_BINARY_DIR}/external/ubertooth/install/usr/local/lib/libubertooth.a")
+	SET(LIBUBERTOOTH_TOOLS   "${CMAKE_BINARY_DIR}/external/ubertooth/install/usr/local/bin")
 
 	# Select the LUA version.
 	INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/muhkuh_lua.cmake)
@@ -97,6 +98,20 @@ IF((${BUILDCFG_ONLY_JONCHKI_CFG} STREQUAL "OFF"))
 	#        DESTINATION .)
 	INSTALL(TARGETS TARGET_lubertooth
 	        DESTINATION lua_plugins)
+
+	INSTALL(FILES ${LIBUBERTOOTH_TOOLS}/ubertooth-rx
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-tx
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-dump
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-util
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-btle
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-dfu
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-specan
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-ego
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-afh
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-ducky
+	              ${LIBUBERTOOTH_TOOLS}/ubertooth-debug
+	        DESTINATION bin
+	        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 	CONFIGURE_FILE(installer/lua${BUILDCFG_LUA_VERSION}/lubertooth.xml
 	               ${CPACK_OUTPUT_FILE_PREFIX}/lua${BUILDCFG_LUA_VERSION}-lubertooth-${PROJECT_VERSION}-${JONCHKI_PLATFORM}.xml

@@ -1,14 +1,12 @@
 diff -uNr ubertooth-2020-12-R1/host/CMakeLists.txt ubertooth-2020-12-R1_patched/host/CMakeLists.txt
 --- ubertooth-2020-12-R1/host/CMakeLists.txt	2020-12-25 22:40:39.000000000 +0100
-+++ ubertooth-2020-12-R1_patched/host/CMakeLists.txt	2021-06-29 17:28:56.455442186 +0200
-@@ -56,9 +56,9 @@
- endif( ${BUILD_STATIC_BINS} AND NOT ${BUILD_STATIC_LIB} )
++++ ubertooth-2020-12-R1_patched/host/CMakeLists.txt	2023-02-16 10:57:11.453918203 +0100
+@@ -57,8 +57,8 @@
  
  add_subdirectory(libubertooth)
--add_subdirectory(ubertooth-tools)
+ add_subdirectory(ubertooth-tools)
 -add_subdirectory(doc)
 -add_subdirectory(misc)
-+#add_subdirectory(ubertooth-tools)
 +#add_subdirectory(doc)
 +#add_subdirectory(misc)
  if(${ENABLE_PYTHON})
