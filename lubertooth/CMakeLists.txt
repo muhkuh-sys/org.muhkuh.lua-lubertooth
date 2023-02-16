@@ -4,7 +4,7 @@ PROJECT("lubertooth")
 
 INCLUDE(ExternalProject)
 
-SET(PROJECT_VERSION  "1.0.1")
+SET(PROJECT_VERSION  "1.1.0")
 
 # Get the VCS version for the jonchki configuration.
 INCLUDE(${CMAKE_HOME_DIRECTORY}/cmake/version.cmake)
